@@ -1,13 +1,11 @@
+import 'package:bmi_calculator/main/main_screen.dart';
 import 'package:flutter/material.dart';
 
 class ResultScreen extends StatelessWidget {
-  final double height;
-  final double weight;
+  final BmiVar bmiVar;
 
-  const ResultScreen({
-    required this.height,
-    required this.weight,
-    super.key,
+  const ResultScreen({super.key,
+    required this.bmiVar,
   });
 
   String _calcBmi(double bmi) {
@@ -50,7 +48,7 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bmi = weight / ((height / 100) * (height / 100));
+    final bmi = bmiVar.weight / ((bmiVar.height / 100) * (bmiVar.height / 100));
     return Scaffold(
       appBar: AppBar(
         title: const Text('결과'),
@@ -69,4 +67,5 @@ class ResultScreen extends StatelessWidget {
       ),
     );
   }
+
 }

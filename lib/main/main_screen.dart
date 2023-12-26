@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:bmi_calculator/result/result_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
@@ -39,7 +42,7 @@ class _MainScreenState extends State<MainScreen> {
     final double? height = prefs.getDouble('height');
     final double? weight = prefs.getDouble('weight');
 
-    if (height != null && weight != null){
+    if (height != null && weight != null) {
       _heightController.text = '$height';
       _weightController.text = '$weight';
       print('키: $height, 몸무게: $weight');
@@ -99,15 +102,15 @@ class _MainScreenState extends State<MainScreen> {
                     return;
                   }
                   save();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ResultScreen(
-                        height: double.parse(_heightController.text),
-                        weight: double.parse(_weightController.text),
-                      ),
-                    ),
-                  );
+                  final bmiVar = BmiVar(
+                    height: double.parse(_heightController.text),
+                    weight: double.parse(_weightController.text));
+                    context.push(
+                    Uri(
+                    path: '/result',
+                    queryParameters: {'BmiVar': jsonEncode(bmiVar.toJson())},
+                  ).toString()
+                  ,);
                 },
                 child: const Text('결과'),
               ),
@@ -117,4 +120,58 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
+}
+
+
+class BmiVar {
+  final double height;
+  final double weight;
+
+//<editor-fold desc="Data Methods">
+  const BmiVar({
+    required this.height,
+    required this.weight,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          (other is BmiVar &&
+              runtimeType == other.runtimeType &&
+              height == other.height &&
+              weight == other.weight);
+
+  @override
+  int get hashCode => height.hashCode ^ weight.hashCode;
+
+  @override
+  String toString() {
+    return 'BmiVar{ height: $height, weight: $weight,}';
+  }
+
+  BmiVar copyWith({
+    double? height,
+    double? weight,
+  }) {
+    return BmiVar(
+      height: height ?? this.height,
+      weight: weight ?? this.weight,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'height': height,
+      'weight': weight,
+    };
+  }
+
+  factory BmiVar.fromJson(Map<String, dynamic> map) {
+    return BmiVar(
+      height: map['height'] as double,
+      weight: map['weight'] as double,
+    );
+  }
+
+//</editor-fold>
 }
